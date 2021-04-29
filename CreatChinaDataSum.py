@@ -15,47 +15,57 @@ from interval import Interval
 
 pd.options.display.max_columns = None
 pd.options.display.max_rows = None
-input = 'D:/result/dataset1'
-output = 'D:/result/summary1.csv'
-usecol = ['Speed', 'RPM', 'Accelerator pedal position', 'Engine fuel rate']
+
+
 def fun(x):
     if x > 1:
         return 0
     else:
         return x
 
+
 def diff_value(df_column_name):
-    a = np.array(df_column_name).tolist()
+    a = list(np.array(df_column_name))
     if len(a) == 0:
         return 0
     else:
         return a[-1] - a[0]
 
-def Range(longitude,latitude):
-    a = 10**(-6)*np.array([longitude.min(), latitude.min()])
-    b = 10**(-6)*np.array([longitude.max(), latitude.max()])
+
+def Range(longitude, latitude):
+    a = 10 ** (-6) * np.array([longitude.min(), latitude.min()])
+    b = 10 ** (-6) * np.array([longitude.max(), latitude.max()])
     dist = np.linalg.norm(b - a)
     return dist
 
+
 def avgBrake(dataframe):
-    if dataframe['Brake times'].sum() > 3*diff_value(dataframe['Integral kilometer']):
-        n = np.mean([dataframe['Brake switch'].sum(), dataframe['Brake times'].sum()])
+    if dataframe['Brake times'].sum() > 3 * diff_value(dataframe['Integral kilometer']):
+        n = np.rint(np.mean([dataframe['Brake switch'].sum(), dataframe['Brake times'].sum()]))
     else:
         n = dataframe['Brake times'].sum()
     return n
 
+
 def highspeedbrake(df):
-    df['highspeedbrake'] = np.where((df['Speed']>90)&((df['Brake times']>0)|(df['Brake switch']>0)),1,0)
+    df['highspeedbrake'] = np.where((df['Speed'] > 90) & ((df['Brake times'] > 0) | (df['Brake switch'] > 0)), 1, 0)
     return df['highspeedbrake'].sum()
+
+
 def hashaccelerate(df, up=0.556):
-    df['hashaccelerate'] = np.where(df['accelerated speed']>up,1,0)
+    df['hashaccelerate'] = np.where(df['accelerated speed'] > up, 1, 0)
     return df['hashaccelerate'].sum()
+
+
 def hashdecelerate(df, low=-0.556):
-    df['hashdecelerate'] = np.where(df['accelerated speed']<low,1,0)
+    df['hashdecelerate'] = np.where(df['accelerated speed'] < low, 1, 0)
     return df['hashdecelerate'].sum()
+
+
 def overspeed(df):
-    df['overspeed'] = np.where(df['Speed']>100,1,0)
+    df['overspeed'] = np.where(df['Speed'] > 100, 1, 0)
     return df['overspeed'].sum()
+
 
 def time2float(b):
     timedelta = []
@@ -66,6 +76,8 @@ def time2float(b):
         else:
             timedelta.append(0)
     return pd.DataFrame(timedelta).diff(1)
+
+
 def getAbj(se):
     '''
     得到相邻数据的里程差和时间差信息
@@ -77,6 +89,8 @@ def getAbj(se):
     mile_dist = pd.Series(mile_dist)
     mile_dist_time = pd.Series(mile_dist_time)
     return mile_dist, mile_dist_time
+
+
 def split_journey(df, rotate=100, dura=5):
     '''
     切分行程
@@ -85,10 +99,9 @@ def split_journey(df, rotate=100, dura=5):
     :param dura: 转速不大于0超过dura即认为行程结束
     :return: 两部分：行程切分点列表和行程时间长度列表
     '''
-
     df['GPS time'] = df['GPS time'].astype('datetime64')
     df = df.set_index('GPS time', drop=False)
-    df['trip'] = np.where(df['RPM'] >= rotate, 1, 0) # 将转速超过rotate的部分标记为行程内
+    df['trip'] = np.where(df['RPM'] >= rotate, 1, 0)  # 将转速超过rotate的部分标记为行程内
     biaoji, mile_dist_time1 = getAbj(df['trip'])
 
     if df['trip'][0] == 1:
@@ -104,12 +117,13 @@ def split_journey(df, rotate=100, dura=5):
     biaoji = biaoji[biaoji != 0]
     biao_idx = biaoji.index  # 1到-1时run
 
-    segment = []
-    segment_time = []
-    seg_start, seg_end, daytripcount, weekendcount = 0, 0, 0, 0
-    weekend1 = Interval('2018-06-30','2018-07-01')
-    weekend2 = Interval('2018-07-07','2018-07-08')
-    day = Interval('05:00:00','19:00:00')
+    segment, segment_time = [], []
+    seg_start, seg_end, daytripcount, nighttripcount, weekdaycount, weekendcount, \
+    trip15, trip30, trip60, trip120, trip120m, daytripdist, nighttripdist, \
+    weekdaydist, weekenddist = 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+    weekend1 = Interval('2018-06-30', '2018-07-01')
+    weekend2 = Interval('2018-07-07', '2018-07-08')
+    day = Interval('05:00:00', '19:00:00')
     assign = True
     for s, e in zip(biao_idx[:-1], biao_idx[1:]):
         start = 0 if s == 0 else s + 1
@@ -124,55 +138,86 @@ def split_journey(df, rotate=100, dura=5):
                 seg_time = mile_dist_time1[seg_start: seg_end].sum() / 60
                 segment.append((seg_start, seg_end))
                 segment_time.append(seg_time)
-                if df.index[seg_start].strftime("%h:%m:%s") in day and df.index[seg_end].strftime("%h:%m:%s") in day:
+                if df['GPS time'][seg_start].strftime("%H:%M:%S") in day and df['GPS time'][seg_end].strftime(
+                        "%H:%M:%S") in day:
                     daytripcount += 1
-                elif df.index[seg_start].strftime("%Y-%M-%D") in weekend1+weekend2 and df.index[seg_end].strftime("%Y-%M-%D") in weekend1+weekend2:
+                    daytripdist += diff_value(df['3-GPS kilometer(km)'][seg_start:seg_end])
+                elif df['GPS time'][seg_start].strftime("%H:%M:%S") not in day or df['GPS time'][seg_end].strftime(
+                        "%H:%M:%S") not in day:
+                    nighttripcount += 1
+                    nighttripdist += diff_value(df['3-GPS kilometer(km)'][seg_start:seg_end])
+                if (df['GPS time'][seg_start].strftime("%Y-%m-%d") in weekend1) or (
+                        df['GPS time'][seg_start].strftime("%Y-%m-%d") in weekend2) or (
+                        df['GPS time'][seg_end].strftime("%Y-%m-%d") in weekend1) or (
+                        df['GPS time'][seg_end].strftime("%Y-%m-%d") in weekend2):
                     weekendcount += 1
+                    weekenddist += diff_value(df['3-GPS kilometer(km)'][seg_start:seg_end])
+                elif (df['GPS time'][seg_start].strftime("%Y-%m-%d") not in weekend1) and (
+                        df['GPS time'][seg_start].strftime("%Y-%m-%d") not in weekend2) and (
+                        df['GPS time'][seg_end].strftime("%Y-%m-%d") not in weekend1) and (
+                        df['GPS time'][seg_end].strftime("%Y-%m-%d") not in weekend2):
+                    weekdaydist += diff_value(df['3-GPS kilometer(km)'][seg_start:seg_end])
+                if seg_time < 15:
+                    trip15 += 1
+                elif 15 <= seg_time < 30:
+                    trip30 += 1
+                elif 30 <= seg_time < 60:
+                    trip60 += 1
+                elif 60 <= seg_time < 120:
+                    trip120 += 1
+                elif seg_time >= 120:
+                    trip120m += 1
                 assign = True
     tripcount = len(segment)
+    weekdaycount = tripcount - weekendcount
     nighttripcount = tripcount - daytripcount
-    return tripcount, nighttripcount, weekendcount
-
-
-
-result = pd.DataFrame()
-count = 0
-LOW, UP = [], []
-for i, file in enumerate(os.listdir(input)):
-    print(i, file)
-
-    filepath = os.path.join(input, file)
-    df = pd.read_csv(filepath, header=0)
-    df = df.drop_duplicates(['GPS time'])
-    df = df.rename(columns={'Selected speed(km/h)': 'Speed'})
-    df = df.loc[df['Longitude'].apply(lambda x: x > 0)].loc[df['Latitude'].apply(lambda y: y > 0)]
-    df['Brake switch'] = df['Brake switch'].apply(lambda x: fun(x))
-    df['speeddiff'] = df['Speed'].diff(1)/3.6
-    df['timediff'] = time2float(df['GPS time'].astype('datetime64'))
-    df['accelerated speed'] = df.apply(lambda x: x['speeddiff']/x['timediff'],axis=1)
-
-    res = pd.DataFrame(df[usecol].mean()).T
-    res.insert(0, column='Range', value=Range(df['Longitude'], df['Latitude']))
-    res.insert(0, column='Brakes', value=avgBrake(df))
-    res.insert(0, column='Fuel', value=diff_value(df['Integral fuel consumption']))
-    res.insert(0, column='Kilo', value=diff_value(df['Integral kilometer']))
-    res.insert(0, column='Harshdeceleration', value=hashdecelerate(df))
-    res.insert(0, column='Harshacceleration', value=hashaccelerate(df))
-    res.insert(0, column='Highspeedbrake', value=highspeedbrake(df))
-    res.insert(0, column='Overspeed', value=overspeed(df))
-    res.insert(0, column='ID',value=file[:11])
-
-    if (res['Fuel'].sum()<10):
-        pass
-    else:
-        result = pd.concat([result, res])
-        count += 1
-    print(count)
-# result = result.loc[result['Kilo'].apply(lambda x: x > 5)].loc[result['Brakes'].apply(lambda y: y > 18)]
-result = result.set_index('ID')
-result = result.fillna(0)
-
+    return tripcount, daytripcount, daytripdist, nighttripcount, nighttripdist, weekdaycount, weekdaydist, weekendcount, weekenddist, trip15, trip30, trip60, trip120, trip120m
 
 
 if __name__ == '__main__':
+    input = "D:/result/dataset0"
+    output = "D:/博士/论文/JA4/summary0.csv"
+    result = pd.DataFrame()
+    count = 0
+    columns = ['ID', 'Overspeed', 'Highspeedbrake', 'Harshacceleration', 'Harshdeceleration',
+               'Distance', 'Fuel', 'Brakes', 'Speed', 'Range', 'RPM', 'Accelerator pedal position', 'Engine fuel rate',
+               'Trips', 'TripsinDay', 'DistanceinDay', 'TripsinNight', 'DistanceinNight', 'TripsinWeekdays',
+               'DistanceinWeekdays', 'TripsinWeekends', 'DistanceinWeekends', 'Trips<15m', '15m<Trips<30m',
+               '30m<Trips<1h', '1h<Trips<2h', 'Trips>2h']
+    for i, file in enumerate(os.listdir(input)):
+        print(i, file)
+        filepath = os.path.join(input, file)
+        df = pd.read_csv(filepath, header=0)
+        df = df.drop_duplicates(['GPS time'])
+        df = df.rename(columns={'Selected speed(km/h)': 'Speed'})
+        df = df.loc[df['Longitude'].apply(lambda x: x > 0)].loc[df['Latitude'].apply(lambda y: y > 0)]
+        df['Brake switch'] = df['Brake switch'].apply(lambda x: fun(x))
+        df['speeddiff'] = df['Speed'].diff(1) / 3.6
+        df['timediff'] = time2float(df['GPS time'].astype('datetime64'))
+        df['accelerated speed'] = df.apply(lambda x: x['speeddiff'] / x['timediff'], axis=1)
+        record = -np.ones([27], dtype=np.float64)
+        record[0] = file[:11]
+        record[1] = overspeed(df)
+        record[2] = highspeedbrake(df)
+        record[3] = hashaccelerate(df)
+        record[4] = hashdecelerate(df)
+        record[6] = diff_value(df['Integral fuel consumption'])
+        record[7] = avgBrake(df)
+        record[8] = df['Speed'].fillna(0).mean()
+        record[9] = Range(df['Longitude'], df['Latitude'])
+        record[10] = df['RPM'].fillna(0).mean()
+        record[11] = df['Accelerator pedal position'].fillna(0).mean()
+        record[12] = df['Engine fuel rate'].fillna(0).mean()
+        record[13], record[14], record[15], record[16], record[17], record[18], record[19], record[20], record[21], \
+        record[22], record[23], record[24], record[25], record[26] = split_journey(df)
+        record[5] = record[15] + record[17]
+        res = pd.DataFrame(np.array(record.tolist()).reshape(1, 27), columns=columns)
+        if record[5] < 5:
+            pass
+        else:
+            result = pd.concat([result, res])
+            count += 1
+        print(count)
+    # result = result.loc[result['Kilo'].apply(lambda x: x > 5)].loc[result['Brakes'].apply(lambda y: y > 18)]
+    result = result.set_index('ID')
     result.to_csv(output, mode='w')
