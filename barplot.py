@@ -22,7 +22,7 @@ range_color = ['#FFFFE0', '#F0E68C', '#FFD700', '#FFA500', '#D2691E', '#B22222']
 for n, p in enumerate(['Overspeed', 'Highspeedbrake', 'Harshacceleration', 'Harshdeceleration']):
     df1['Incidence'] = (df1[p] / df1['Kilo']).replace(np.nan, 0)
     df2['Incidence'] = (df2[p] / df2['Kilo']).replace(np.nan, 0)
-    bar3d = Bar3D(init_opts=opts.InitOpts(width="1000px", height="550px"))
+    bar3d = Bar3D(init_opts=opts.InitOpts(width="1200px", height="500px"))
     for i, j in zip_longest(df1.index.unique(), df2.index.unique()):
         dfn = pd.DataFrame(0, index=range(144), columns=['Date', 'Time', 'Incidence'])
         if j is None:
