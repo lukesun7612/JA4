@@ -24,7 +24,7 @@ for n, p in enumerate(['Overspeed', 'Highspeedbrake', 'Harshacceleration', 'Hars
     df2['Incidence'] = (df2[p] / df2['Kilo']).replace(np.nan, 0)
     bar3d = Bar3D(init_opts=opts.InitOpts(width="1200px", height="500px"))
     for i, j in zip_longest(df1.index.unique(), df2.index.unique()):
-        dfn = pd.DataFrame(0, index=range(144), columns=['Date', 'Time', 'Incidence'])
+        dfn = pd.DataFrame(np.nan, index=range(144), columns=['Date', 'Time', 'Incidence'])
         if j is None:
             data = pd.concat([dfn, df1.loc[[str(i)], ['Date', 'Time', 'Incidence']]])
         else:
@@ -40,13 +40,13 @@ for n, p in enumerate(['Overspeed', 'Highspeedbrake', 'Harshacceleration', 'Hars
             grid3d_opts=opts.Grid3DOpts(width=100, height=150, depth=300)
         )
     if n == 0:
-        max_v = 5
+        max_v = 2
     elif n == 1:
-        max_v = 5
+        max_v = 0.5
     elif n == 2:
-        max_v = 50
+        max_v = 20
     elif n == 3:
-        max_v = 30
+        max_v = 20
     bar3d.set_global_opts(title_opts=opts.TitleOpts(title=p, pos_right='50%', pos_top='10%'),
                           visualmap_opts=opts.VisualMapOpts(max_=max_v, range_color=range_color, is_calculable=False, pos_right='20%', pos_top='15%')
                           )
