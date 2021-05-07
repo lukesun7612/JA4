@@ -5,54 +5,65 @@
 @author: lukes
 @project: JA4
 @file: barplot.py
-@time: 2021/4/28 10:45
+@time: 2021/5/6 12:26
 """
+
+
 import pandas as pd
 import numpy as np
-from pyecharts.charts import Bar3D
+from pyecharts.charts import Bar
 from pyecharts import options as opts
-from itertools import zip_longest
-input1 = "D:/博士/论文/JA4/paneldata_hours1.csv"
-input2 = "D:/博士/论文/JA4/paneldata_hours2.csv"
-df1 = pd.read_csv(input1, header=0, index_col='ID')
-df2 = pd.read_csv(input2, header=0, index_col='ID')
-x_axis = pd.concat([df2['Date'], df1['Date']]).unique().tolist()
-y_axis = df1['Time'].unique().tolist()
-range_color = ['#FFFFE0', '#F0E68C', '#FFD700', '#FFA500', '#D2691E', '#B22222']
-for n, p in enumerate(['Overspeed', 'Highspeedbrake', 'Harshacceleration', 'Harshdeceleration']):
-    df1['Incidence'] = (df1[p] / df1['Kilo']).replace(np.nan, 0)
-    df2['Incidence'] = (df2[p] / df2['Kilo']).replace(np.nan, 0)
-    bar3d = Bar3D(init_opts=opts.InitOpts(width="1200px", height="500px"))
-    for i, j in zip_longest(df1.index.unique(), df2.index.unique()):
-        dfn = pd.DataFrame(np.nan, index=range(144), columns=['Date', 'Time', 'Incidence'])
-        if j is None:
-            data = pd.concat([dfn, df1.loc[[str(i)], ['Date', 'Time', 'Incidence']]])
-        else:
-            data = pd.concat([df2.loc[[str(j)], ['Date', 'Time', 'Incidence']], df1.loc[[str(i)], ['Date', 'Time', 'Incidence']]])
-        data = [[d[0], d[1], d[2]] for d in data.values.tolist()]
-        bar3d.add(
-            "",
-            data,
-            shading="lambert",
-            xaxis3d_opts=opts.Axis3DOpts(data=x_axis, type_="category", name="Date", name_gap=50, interval=1),
-            yaxis3d_opts=opts.Axis3DOpts(data=y_axis, type_="category", name="Hours", name_gap=80, interval=1),
-            zaxis3d_opts=opts.Axis3DOpts(type_="value", name="Incidence"),
-            grid3d_opts=opts.Grid3DOpts(width=100, height=150, depth=300)
-        )
-    if n == 0:
-        max_v = 2
-    elif n == 1:
-        max_v = 0.5
-    elif n == 2:
-        max_v = 20
-    elif n == 3:
-        max_v = 20
-    bar3d.set_global_opts(title_opts=opts.TitleOpts(title=p, pos_right='50%', pos_top='10%'),
-                          visualmap_opts=opts.VisualMapOpts(max_=max_v, range_color=range_color, is_calculable=False, pos_right='20%', pos_top='15%')
-                          )
-    bar3d.set_series_opts(**{"stack": "stack"})
-    bar3d.render("bar3d_stack"+str(n+1)+".html")
+
+
 
 
 if __name__ == '__main__':
-    pass
+    input = "D:/博士/论文/JA4/paneldata_hours0.csv"
+    df = pd.read_csv(input, header=0, index_col='Date')
+    x_axis1 = df.index.unique().tolist()
+    x_axis2 = df['Time'].unique().tolist()
+
+    y1, y2, y3, y4, y5, y6, y7, y8 = [], [], [], [], [], [], [], []
+    for d in x_axis1:
+        y1.append(df.loc[d]['Overspeed'].sum()/df.loc[d]['Kilo'].replace(np.nan, 0).sum())
+        y2.append(df.loc[d]['Highspeedbrake'].sum()/df.loc[d]['Kilo'].replace(np.nan, 0).sum())
+        y3.append(df.loc[d]['Harshacceleration'].sum()/df.loc[d]['Kilo'].replace(np.nan, 0).sum())
+        y4.append(df.loc[d]['Harshdeceleration'].sum()/df.loc[d]['Kilo'].replace(np.nan, 0).sum())
+    c = (
+        Bar(init_opts=opts.InitOpts(width="1250px", height="550px"))
+            .add_xaxis(x_axis1)
+            .add_yaxis("Overspeed", y1, gap='0')
+            .add_yaxis("Highspeedbrake", y2, gap='0')
+            .add_yaxis("Harshacceleration", y3, gap='0')
+            .add_yaxis("Harshdeceleration", y4, gap='0')
+            .set_series_opts(label_opts=opts.LabelOpts(is_show=False),
+                             )
+            .set_global_opts(
+            # title_opts=opts.TitleOpts(title="Date Effect"),
+                             xaxis_opts=opts.AxisOpts(name='Date', name_location='center', name_gap=50, axislabel_opts=opts.LabelOpts(font_size=10, rotate=40)),
+                             yaxis_opts=opts.AxisOpts(name='Incidence', name_location='center', name_gap=40, name_rotate=0, splitline_opts=opts.SplitLineOpts(is_show=True),)
+                             )
+            .render("./Figure/bar1.html")
+    )
+    df = df.set_index('Time')
+    for t in x_axis2:
+        y5.append(df.loc[t]['Overspeed'].sum() / df.loc[t]['Kilo'].replace(np.nan, 0).sum())
+        y6.append(df.loc[t]['Highspeedbrake'].sum() / df.loc[t]['Kilo'].replace(np.nan, 0).sum())
+        y7.append(df.loc[t]['Harshacceleration'].sum() / df.loc[t]['Kilo'].replace(np.nan, 0).sum())
+        y8.append(df.loc[t]['Harshdeceleration'].sum() / df.loc[t]['Kilo'].replace(np.nan, 0).sum())
+    c = (
+        Bar(init_opts=opts.InitOpts(width="1250px", height="550px"))
+            .add_xaxis(x_axis2)
+            .add_yaxis("Overspeed", y5, gap='0')
+            .add_yaxis("Highspeedbrake", y6, gap='0')
+            .add_yaxis("Harshacceleration", y7, gap='0')
+            .add_yaxis("Harshdeceleration", y8, gap='0')
+            .set_series_opts(label_opts=opts.LabelOpts(is_show=False),
+                             )
+            .set_global_opts(
+            # title_opts=opts.TitleOpts(title="Hour Effect"),
+                             xaxis_opts=opts.AxisOpts(name='Hour', name_location='center', name_gap=50, axislabel_opts=opts.LabelOpts(font_size=8, rotate=40)),
+                             yaxis_opts=opts.AxisOpts(name='Incidence', name_location='center', name_gap=40, name_rotate=0, splitline_opts=opts.SplitLineOpts(is_show=True),)
+                             )
+            .render("./Figure/bar2.html")
+    )

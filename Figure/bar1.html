@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Awesome-pyecharts</title>
+            <script type="text/javascript" src="https://assets.pyecharts.org/assets/echarts.min.js"></script>
+
+</head>
+<body>
+    <div id="f51be5744aa14ba0812537600be354ad" class="chart-container" style="width:1250px; height:550px;"></div>
+    <script>
+        var chart_f51be5744aa14ba0812537600be354ad = echarts.init(
+            document.getElementById('f51be5744aa14ba0812537600be354ad'), 'white', {renderer: 'canvas'});
+        var option_f51be5744aa14ba0812537600be354ad = {
+    "animation": true,
+    "animationThreshold": 2000,
+    "animationDuration": 1000,
+    "animationEasing": "cubicOut",
+    "animationDelay": 0,
+    "animationDurationUpdate": 300,
+    "animationEasingUpdate": "cubicOut",
+    "animationDelayUpdate": 0,
+    "color": [
+        "#c23531",
+        "#2f4554",
+        "#61a0a8",
+        "#d48265",
+        "#749f83",
+        "#ca8622",
+        "#bda29a",
+        "#6e7074",
+        "#546570",
+        "#c4ccd3",
+        "#f05b72",
+        "#ef5b9c",
+        "#f47920",
+        "#905a3d",
+        "#fab27b",
+        "#2a5caa",
+        "#444693",
+        "#726930",
+        "#b2d235",
+        "#6d8346",
+        "#ac6767",
+        "#1d953f",
+        "#6950a1",
+        "#918597"
+    ],
+    "series": [
+        {
+            "type": "bar",
+            "name": "Overspeed",
+            "data": [
+                0.0014195239135182355,
+                0.0015589885987928136,
+                0.001982639681039446,
+                0.0011104467412659093,
+                0.001412267542094899,
+                0.0022587833094227894,
+                0.010913802087000605,
+                0.006854963482143782,
+                0.005721077391077889,
+                0.01225197226870667,
+                0.0069230712456361775,
+                0.007292240379319577
+            ],
+            "barCategoryGap": "20%",
+            "barGap": "0",
+            "label": {
+                "show": false,
+                "position": "top",
+                "margin": 8
+            },
+            "rippleEffect": {
+                "show": true,
+                "brushType": "stroke",
+                "scale": 2.5,
+                "period": 4
+            }
+        },
+        {
+            "type": "bar",
+            "name": "Highspeedbrake",
+            "data": [
+                0.015478270364708452,
+                0.011324728500664778,
+                0.01632282805896859,
+                0.011673927279974943,
+                0.01420261509314304,
+                0.014041085436952474,
+                0.02081367675430567,
+                0.0203576129329324,
+                0.016913887395898553,
+                0.02212689891987047,
+                0.01852548915410107,
+                0.01815367858142848
+            ],
+            "barCategoryGap": "20%",
+            "barGap": "0",
+            "label": {
+                "show": false,
+                "position": "top",
+                "margin": 8
+            },
+            "rippleEffect": {
+                "show": true,
+                "brushType": "stroke",
+                "scale": 2.5,
+                "period": 4
+            }
+        },
+        {
+            "type": "bar",
+            "name": "Harshacceleration",
+            "data": [
+                0.03466914173400306,
+                0.029797272652398496,
+                0.030255624721615658,
+                0.02505623416189744,
+                0.01228406296048582,
+                0.0015872531363511492,
+                0.06477869625832618,
+                0.07774387309878401,
+                0.06773866450937258,
+                0.05604394410275357,
+                0.04788580622781185,
+                0.015322935480595566
+            ],
+            "barCategoryGap": "20%",
+            "barGap": "0",
+            "label": {
+                "show": false,
+                "position": "top",
+                "margin": 8
+            },
+            "rippleEffect": {
+                "show": true,
+                "brushType": "stroke",
+                "scale": 2.5,
+                "period": 4
+            }
+        },
+        {
+            "type": "bar",
+            "name": "Harshdeceleration",
+            "data": [
+                0.04288600131032977,
+                0.037003918061912444,
+                0.03834914013188627,
+                0.029725805073887418,
+                0.016254400012790347,
+                0.0017093495314550837,
+                0.06763740828885666,
+                0.07885428834967124,
+                0.06840358391559956,
+                0.058624736487514394,
+                0.04877148698418322,
+                0.015107552853358278
+            ],
+            "barCategoryGap": "20%",
+            "barGap": "0",
+            "label": {
+                "show": false,
+                "position": "top",
+                "margin": 8
+            },
+            "rippleEffect": {
+                "show": true,
+                "brushType": "stroke",
+                "scale": 2.5,
+                "period": 4
+            }
+        }
+    ],
+    "legend": [
+        {
+            "data": [
+                "Overspeed",
+                "Highspeedbrake",
+                "Harshacceleration",
+                "Harshdeceleration"
+            ],
+            "selected": {
+                "Overspeed": true,
+                "Highspeedbrake": true,
+                "Harshacceleration": true,
+                "Harshdeceleration": true
+            },
+            "show": true,
+            "padding": 5,
+            "itemGap": 10,
+            "itemWidth": 25,
+            "itemHeight": 14
+        }
+    ],
+    "tooltip": {
+        "show": true,
+        "trigger": "item",
+        "triggerOn": "mousemove|click",
+        "axisPointer": {
+            "type": "line"
+        },
+        "textStyle": {
+            "fontSize": 14
+        },
+        "borderWidth": 0
+    },
+    "xAxis": [
+        {
+            "name": "Date",
+            "show": true,
+            "scale": false,
+            "nameLocation": "center",
+            "nameGap": 50,
+            "gridIndex": 0,
+            "axisLabel": {
+                "show": true,
+                "position": "top",
+                "rotate": 40,
+                "margin": 8,
+                "fontSize": 10
+            },
+            "inverse": false,
+            "offset": 0,
+            "splitNumber": 5,
+            "minInterval": 0,
+            "splitLine": {
+                "show": false,
+                "lineStyle": {
+                    "show": true,
+                    "width": 1,
+                    "opacity": 1,
+                    "curveness": 0,
+                    "type": "solid"
+                }
+            },
+            "data": [
+                "2018/6/27",
+                "2018/6/28",
+                "2018/6/29",
+                "2018/6/30",
+                "2018/7/1",
+                "2018/7/2",
+                "2018/7/3",
+                "2018/7/4",
+                "2018/7/5",
+                "2018/7/6",
+                "2018/7/7",
+                "2018/7/8"
+            ]
+        }
+    ],
+    "yAxis": [
+        {
+            "name": "Incidence",
+            "show": true,
+            "scale": false,
+            "nameLocation": "center",
+            "nameGap": 40,
+            "nameRotate": 0,
+            "gridIndex": 0,
+            "inverse": false,
+            "offset": 0,
+            "splitNumber": 5,
+            "minInterval": 0,
+            "splitLine": {
+                "show": true,
+                "lineStyle": {
+                    "show": true,
+                    "width": 1,
+                    "opacity": 1,
+                    "curveness": 0,
+                    "type": "solid"
+                }
+            }
+        }
+    ],
+    "title": [
+        {
+            "padding": 5,
+            "itemGap": 10
+        }
+    ]
+};
+        chart_f51be5744aa14ba0812537600be354ad.setOption(option_f51be5744aa14ba0812537600be354ad);
+    </script>
+</body>
+</html>
